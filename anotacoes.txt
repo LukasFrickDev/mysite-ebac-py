@@ -1,4 +1,4 @@
-Configurando Django
+M4 - Configurando Django
 
 1 - Verificar versão python: 
     python3 --version
@@ -17,10 +17,67 @@ Configurando Django
         Escrever ./activate
     
     b - Instalar Django
+        voltar para a pasta principal do projeto e:
         pip install django
 
     c - Criar o projeto Django
         django-admin startproject mysite //// django-admin startproject nome_do_projeto
 
     d - Iniciar o app
-        python manage.py startapp myapp //// python manage.py startapp nome_do_app
+        dentro da pasta do projeto criado anteriormente:
+        python manage.py startapp blog //// python manage.py startapp nome_do_app
+
+5 - Estrutura de um projeto Django:
+
+    __init__.py - um script Python em banco cuja a preseça indica ao interpretador Python que o diretório é um pacote Python
+    settings.py - Contém as definicções de configurações para o projeto Django
+    urls.py - Define as rotas de URL para o projeto Django e padrões de URL
+    wsgi.py - Um ponto de entrada para servidores WSGI para servir o projeto Django. Basicamente, é o que conecta o servidor web ao aplicativo Django  .
+    manage.py - Um utilitário de linha de comando que permite interagir com o projeto Django de várias maneiras, como iniciar o servidor de desenvolvimento, criar migrações de banco de dados e executar testes.
+
+6 - Configurações em setting.py do mysite
+
+    a - Adicionar o app criado na lista INSTALLED_APPS
+        'blog',  //// 'nome_do_app.apps.NomeDoAppConfig',
+
+    b - Adicionar as configurações do banco de dados
+        Por padrão, o Django usa o SQLite como banco de dados. Para projetos maiores, você pode querer usar PostgreSQL, MySQL ou outro banco de dados. As configurações do banco de dados estão localizadas na seção DATABASES do arquivo settings.py.
+        No caso so configura caso queira usar outro banco de dados
+
+7 - migrações dos modelos pré existentes do Django
+    python manage.py migrate
+
+8 - Testear aplicação
+    python manage.py runserver
+
+
+M5 - Criando Modelos no Django
+
+Aula 1 - O que é o ORM e como usar Django ORM
+
+- ORM (Object-Relational Mapping) é uma técnica que permite mapear objetos do mundo real para tabelas em um banco de dados relacional.
+- O Django ORM é uma ferramenta poderosa que facilita a interação com o banco de dados, permitindo que os desenvolvedores trabalhem com dados como objetos Python.
+- Para usar o Django ORM, é necessário definir modelos (classes) que representam as tabelas do banco de dados.
+- Os modelos são definidos em um arquivo chamado models.py dentro de um aplicativo Django.
+- Após definir os modelos, é possível realizar operações de CRUD (Create, Read, Update, Delete) de forma simples e intuitiva.
+- O Django ORM também oferece recursos avançados, como consultas complexas, relacionamentos entre modelos e migrações de banco de dados.
+
+Usamos aqui o django models que tem suporte ao ORM
+Pois em vez de construir toda a tabela a mão no banco de dados usamos o ORM para fazer isso automaticamente.
+
+
+Aula 2: Construindo modelos de entidade com Django Models e como utilizar querysets para manipulação de dados
+
+- Para construir modelos de entidade com Django Models, devemos criar classes que herdam de models.Model e definir os campos como atributos da classe.
+- Cada atributo da classe representa uma coluna na tabela do banco de dados.
+- Após definir os modelos, podemos utilizar o Django ORM para realizar operações de manipulação de dados.
+- Os querysets são a principal forma de interagir com o banco de dados através do Django ORM.
+- Um queryset é uma coleção de objetos que podem ser filtrados, ordenados e manipulados de diversas formas.
+- Podemos criar, ler, atualizar e excluir objetos utilizando métodos disponíveis nos querysets.
+- Além disso, os querysets suportam operações de agregação e anotação, permitindo realizar cálculos e estatísticas diretamente no banco de dados.
+
+- É importante entender como funcionam os relacionamentos entre modelos, como ForeignKey, ManyToManyField e OneToOneField, para criar estruturas de dados mais complexas.
+
+OneToOneField - Um relacionamento onde um registro em uma tabela está associado a um único registro em outra tabela.
+1:N - Um relacionamento onde um registro em uma tabela pode estar associado a vários registros em outra tabela.
+N:N - Um relacionamento onde vários registros em uma tabela podem estar associados a vários registros em outra tabela.
