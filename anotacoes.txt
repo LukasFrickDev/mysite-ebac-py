@@ -1,0 +1,26 @@
+Configurando Django
+
+1 - Verificar versão python: 
+    python3 --version
+
+2 - Criar ambiente virtual:
+    python3 -m venv env       //// python3 -m venv nome-do-ambiente
+
+3 - Criar uma nova branch para alterações do projeto
+    git checkout -b "project-setup"  //// git checkout -b nome-da-branch
+
+
+4 - Criar o Projeto
+    Passos antes de iniciar o projeto
+    a - Ativar o ambiente virtual
+        Ir até a pasta criar env pelo terminal e depois Scripts
+        Escrever ./activate
+    
+    b - Instalar Django
+        pip install django
+
+    c - Criar o projeto Django
+        django-admin startproject mysite //// django-admin startproject nome_do_projeto
+
+    d - Iniciar o app
+        python manage.py startapp myapp //// python manage.py startapp nome_do_app
