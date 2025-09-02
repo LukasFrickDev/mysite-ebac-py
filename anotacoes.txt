@@ -15,6 +15,7 @@ Configurando Django
     a - Ativar o ambiente virtual
         Ir até a pasta criar env pelo terminal e depois Scripts
         Escrever ./activate
+        .\env\Scripts\Activate.ps1
     
     b - Instalar Django
         pip install django
@@ -24,3 +25,300 @@ Configurando Django
 
     d - Iniciar o app
         python manage.py startapp myapp //// python manage.py startapp nome_do_app
+
+            5 - Estrutura de um projeto Django:
+
+        __init__.py - um script Python em banco cuja a preseça indica ao interpretador Python que o diretório é um pacote Python
+        settings.py - Contém as definicções de configurações para o projeto Django
+        urls.py - Define as rotas de URL para o projeto Django e padrões de URL
+        wsgi.py - Um ponto de entrada para servidores WSGI para servir o projeto Django. Basicamente, é o que conecta o servidor web ao aplicativo Django  .
+        manage.py - Um utilitário de linha de comando que permite interagir com o projeto Django de várias maneiras, como iniciar o servidor de desenvolvimento, criar migrações de banco de dados e executar testes.
+
+    6 - Configurações em setting.py do mysite
+
+        a - Adicionar o app criado na lista INSTALLED_APPS
+            'blog',  //// 'nome_do_app.apps.NomeDoAppConfig',
+
+        b - Adicionar as configurações do banco de dados
+            Por padrão, o Django usa o SQLite como banco de dados. Para projetos maiores, você pode querer usar PostgreSQL, MySQL ou outro banco de dados. As configurações do banco de dados estão localizadas na seção DATABASES do arquivo settings.py.
+            No caso so configura caso queira usar outro banco de dados
+
+    7 - migrações dos modelos pré existentes do Django
+        python manage.py migrate
+
+    8 - Testear aplicação
+        python manage.py runserver
+
+
+M5 - Models no Django
+    Aula 1 - o que é ORM?
+        ORM (Object-Relational Mapping) é uma técnica que permite que você interaja com um banco de dados usando objetos em vez de SQL. No Django, o ORM é uma parte fundamental do framework e permite que você defina seus modelos como classes Python. O Django cuida da tradução dessas classes em tabelas de banco de dados e fornece uma API para realizar operações de banco de dados usando essas classes.
+
+    Aula 2 - Construindo modelos de entidade com Django Models e como utilizar querysets para manipulação de dados
+        models é um módulo do Django que fornece uma maneira de definir e manipular modelos de dados. Um modelo é uma representação de uma tabela no banco de dados e é definido como uma classe Python que herda de models.Model. Os atributos da classe representam as colunas da tabela.
+        Para criar um modelo no Django, você precisa definir uma classe que herda de models.Model. Cada atributo da classe representa um campo no banco de dados. Por exemplo:
+
+        Primeiro dentro da pasta do projeto (blog), criar uma pasta chamada models
+        Depois criar um arquivo chamado __init__.py dentro da pasta models para torná-la um pacote Python.
+        Em seguida, crie um arquivo chamado models.py dentro da pasta models. Este arquivo conterá a definição dos seus modelos. ( ou se preferir um arquivo apra cada models igual fizemos na aula post.py)
+
+        1 - apos escrever o modelo, precisamos criar as migrações
+            python manage.py makemigrations blog  //// python manage.py makemigrations nome_do_app
+            python manage.py migrate blog  //// python manage.py migrate nome_do_app
+            OBS: não é necessário o nome do arquivo caso esteja ja pasta
+
+    Aula 3 - Relacionando entidades com Django e quais os tipos de campos disponíveis em Django
+
+        1 - Criar um super usuário para acessar o admin do Django
+            python manage.py createsuperuser
+            Depois seguir os passos no terminal
+
+        2 - Execução do modelo
+            python manage.py shell
+            from blog.models import Post
+
+        3 - Acessando dados pelo terminal
+            python manage.py shell    ------ para sair = quit()
+            from blog.models import Post
+            Post.objects.filter() ou  User.objects.get()
+    
+    Aula 4 - Testando Modelos Django Testing Library PyTest e FactoryBoy
+
+        Instalando Dependências:
+
+        pip install pytest-django
+        pip install Faker
+        pip install factory_boy
+        pip install pytest
+
+        Uma vez que uma fixture é criada podemos utilzair em varios outros testes sem ter que ficar repetindo codigos
+
+        Após todas as instalações, criar um arquivo pytest.ini na pasta do projeto (onde está manage.py) com o seguinte conteúdo:
+        [pytest]
+        DJANGO_SETTINGS_MODULE = mysite.settings
+        python_files = tests.py test_*.py *_tests.py
+
+        Então criar uma past models dentro de mysite e o test_post, pois vamos testar o post criado no Blog. tambem inclui um arquivo factories.py em blog
+
+        Agora para salvar/congelar todas as dependencias que instalamos vamos criar uma arquivo requirements.txt.
+
+M6 - Django Views
+
+    Aula 1 - Arquitetura MVC e MVT
+        O que é uma View no Django?
+            As Views no Django são responsáveis por processar as requisições HTTP e retornar as respostas apropriadas. 
+            Elas atuam como intermediárias entre os modelos e os templates, permitindo que você defina a lógica de apresentação da sua aplicação.
+
+        Arquitetura MVC (Model-View-Controller)
+            A arquitetura MVC é um padrão de design que separa a aplicação em três componentes principais: Model (Modelo), View (Visão) e Controller (Controlador). 
+            Essa separação permite uma melhor organização do código e facilita a manutenção e escalabilidade da aplicação.
+            A ordem de funcionamento do MVC é a seguinte:
+                1. O usuário faz uma solicitação (request) para a aplicação.
+                2. O Controller recebe a solicitação e interage com o Model para obter os dados necessários.
+                3. O Model retorna os dados para o Controller.
+                4. O Controller seleciona um Template apropriado e passa os dados para ele.
+                5. O Template é renderizado e a resposta (response) é enviada de volta ao usuário.
+            
+            Controller
+                O Controller é responsável por gerenciar a lógica de negócios da aplicação. 
+                Ele recebe as solicitações do usuário, interage com os Models para obter os dados necessários e seleciona o Template apropriado para renderizar a resposta.
+
+            Model
+                O Model é responsável por representar a estrutura de dados da aplicação. 
+                Ele define os campos e comportamentos dos dados que serão armazenados no banco de dados.
+
+            View
+                A View é responsável por processar as solicitações do usuário e retornar as respostas apropriadas. 
+                Ela atua como intermediária entre o Model e o Template, permitindo que você defina a lógica de apresentação da sua aplicação.
+
+        Arquitetura MTV (Model-Template-View)
+            A arquitetura MTV é uma variação do padrão MVC, adaptada para o Django. 
+            Nela, o Model representa a estrutura de dados, o Template é responsável pela apresentação (HTML) e a View lida com a lógica de negócios e a interação entre o Model e o Template.
+            A ordem de funcionamento do MTV é a seguinte:
+                1. O usuário faz uma solicitação (request) para a aplicação.
+                2. A View recebe a solicitação e interage com o Model para obter os dados necessários.
+                3. O Model retorna os dados para a View.
+                4. A View seleciona um Template apropriado e passa os dados para ele.
+                5. O Template é renderizado e a resposta (response) é enviada de volta ao usuário.
+
+    Aula 2 - Tratando requisições com Django Views
+
+        A função view, ou somente view, é simplesmente uma função Python que recebe uma solicitação/requisição web e retorna uma resposta web.
+
+        1 - Base View
+            A classe genérica master. Todas as outras classes herdam dessa classe. O fluxo básico da execução dessa classe quando recebe uma requisição é:
+                dispatch()
+                http_method_not_allowed()
+                options()
+
+            Exemplo de uso:
+
+            from django.http import HttpResponse
+            from django.views.generic import View
+
+            class HomeView(View):
+                def get(self, request):
+                    return HttpResponse("Hello, World!")
+        
+        2 - Template View
+            A TemplateView é uma classe genérica que renderiza um template. 
+            Ela é útil quando você deseja exibir uma página estática ou uma página que não requer muita lógica de negócios.
+                dispatch()
+                http_method_not_allowed()
+                get_context_data()
+
+
+            Exemplo de uso:
+
+            from django.views.generic import TemplateView
+            from articles.models import Article
+
+            class HomeView(TemplateView):
+                template_name = "home.html"
+
+                def get_context_data(self, **kwargs):
+                    context = super().get_context_data(**kwargs)
+                    context['articles'] = Article.objects.all()
+                    return context
+
+        3 - List View
+            A ListView é uma classe genérica que exibe uma lista de objetos. Ela é útil quando você deseja exibir uma lista de itens, como posts de blog, produtos, etc.
+
+            Exemplo de uso:
+
+            from django.views.generic import ListView
+            from django.utils import timezone
+            from articles.models import Article
+            
+            class ArticleListView(ListView):
+                model = Article
+
+                def get_queryset(self, **kwargs):
+                    return Article.objects.filter(status='publicado')
+
+    Aula 3 - Testando views com Django Testing Library
+        Urls - O primeiro passo para escrever views é montar sua estrutura de URLs, utilizando o arquivo urls.py do seu aplicativo. 
+        Nele, você define as rotas que serão mapeadas para suas views.
+        Criamos um teste dentro da pasta teste e apos isso dentro de blog o post_view.py dentro da pasta view
+        Tambem incluimos arquivos urls para a rota do view
+
+
+M7 - Django admin
+
+    Aula 1 - o que é o Django admin
+        O Django admin é uma interface administrativa gerada automaticamente que permite gerenciar o conteúdo da sua aplicação Django. 
+        Ele fornece uma maneira fácil de criar, ler, atualizar e excluir registros no banco de dados, sem a necessidade de criar formulários ou views manualmente.
+
+        Funcionalidades de usuarios possuindo diferentes níveis de permissão:
+        - Acesso total para superusuários
+        - Acesso limitado para usuários comuns
+        - Possibilidade de atribuir permissões específicas a grupos de usuários
+        
+        Podendo criar grupos e atribuir permissões a esses grupos, facilitando a gestão de usuários com necessidades semelhantes.
+
+        Além de poder extender alguns modelos, como o User, para adicionar campos personalizados e atender a requisitos específicos do seu projeto.
+    
+    Aula 2 - Criando Super usuário
+
+        1 - Criamos o usuario
+            python manage.py createsuperuser
+            Depois seguir os passos no terminal
+
+        2 - runserver
+            python manage.py runserver
+
+        3 - admin
+            No navegador colocamos a url/admin para ter acesso ao usuario
+
+    Aula 3 - Funcionalidades Django admin
+
+        Dentro do ambiente é possivel criar usuario e grupos.
+        Além de varias outras informações, como a possibilidade de editar e excluir usuários, atribuir permissões e muito mais.
+
+    Aula 4 - Django User Model
+
+        Para utilizar os models vamos no arquivo admin.py e incluir uma função para registrar o model criado.
+        Assim vamos ter acesso a ele pelo Django admin
+
+            from django.contrib import admin
+            from .models import Post
+
+            admin.site.register(Post)
+
+        Criamos a função PostAdmin para organizar a pagina dentro do Django admin
+
+            class PostAdmin(admin.ModelAdmin):
+                list_display = ('title', 'slug','status', 'created_on') --- nomeação de colunas
+                list_filter = ('status',)       --- criado filtro pelo status
+                search_fields = ['title', 'content']    --- campos de pesquisa
+                prepopulated_fields = {'slug': ('title',)} --- preenchimento automático do slug
+
+            admin.site.register(Post, PostAdmin)
+
+M8 - Django templates
+
+    Aula 1 - Introdução aos Templates
+        Os templates do Django são arquivos HTML que definem a estrutura e o layout das páginas da sua aplicação. 
+        Eles permitem que você separe a lógica de apresentação da lógica de negócios, facilitando a manutenção e a reutilização do código.
+
+        
+        
+    Aula 2 - Configurando Django Templates
+    
+        Para criar um template, você pode criar um arquivo HTML dentro da pasta "templates" do seu aplicativo. Em seguida, você pode renderizar esse template em suas views usando a função render().
+
+        Exemplo de uso:
+
+        from django.shortcuts import render
+
+        def home(request):
+            return render(request, 'home.html')
+        OBS: criar a pasta templates na raiz do projeto e não dentro do app
+
+        Dentro de mysite ir em setting.py e adicionar a configuração dos templates
+
+        TEMPLATES_DIRS = [
+            BASE_DIR / 'templates',
+        ]
+
+        apos isso em TEMPLATES incluir o TEMPLATES_DIRS dentro de DIRS
+
+        Isso quer dizer ao django que vai ter um HTML que podemos trocar informações entre a view e o template.
+
+    Aula 3 - Usando HTML em Django templates
+
+        Incluimos os templates html dentro da pasta raiz templates 
+            base.html   
+            index.html
+            sidebar.html
+            post_detail.html
+    
+    Aula 4 - Configurando templates e views
+
+        1 - Criar a view para renderizar o template index.html em post_views.py
+                from django.views import generic
+
+                from blog.models import Post
+
+
+                class PostView(generic.ListView):
+                    queryset = Post.objects.filter(status=1).order_by('-created_on')
+                    template_name = 'index.html'
+
+                class PostDetailView(generic.DetailView):
+                    model = Post
+                    template_name = 'post_detail.html'
+
+        2 - Criar a rota para a view criada em urls.py
+                from django.urls import path 
+                from blog import views
+
+                urlpatterns = [
+                    path('', views.PostView.as_view(), name='home'),
+                    path('<slug:slug>/', views.PostDetailView.as_view(), name='post_detail'),
+                ]
+        
+        3 - incluito __init__.py em views
+                from .post_view import PostView
+                from .post_view import PostDetailView
+        
