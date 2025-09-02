@@ -15,6 +15,7 @@ Configurando Django
     a - Ativar o ambiente virtual
         Ir até a pasta criar env pelo terminal e depois Scripts
         Escrever ./activate
+        .\env\Scripts\Activate.ps1
     
     b - Instalar Django
         pip install django
@@ -198,5 +199,126 @@ M6 - Django Views
     Aula 3 - Testando views com Django Testing Library
         Urls - O primeiro passo para escrever views é montar sua estrutura de URLs, utilizando o arquivo urls.py do seu aplicativo. 
         Nele, você define as rotas que serão mapeadas para suas views.
+        Criamos um teste dentro da pasta teste e apos isso dentro de blog o post_view.py dentro da pasta view
+        Tambem incluimos arquivos urls para a rota do view
 
-       
+
+M7 - Django admin
+
+    Aula 1 - o que é o Django admin
+        O Django admin é uma interface administrativa gerada automaticamente que permite gerenciar o conteúdo da sua aplicação Django. 
+        Ele fornece uma maneira fácil de criar, ler, atualizar e excluir registros no banco de dados, sem a necessidade de criar formulários ou views manualmente.
+
+        Funcionalidades de usuarios possuindo diferentes níveis de permissão:
+        - Acesso total para superusuários
+        - Acesso limitado para usuários comuns
+        - Possibilidade de atribuir permissões específicas a grupos de usuários
+        
+        Podendo criar grupos e atribuir permissões a esses grupos, facilitando a gestão de usuários com necessidades semelhantes.
+
+        Além de poder extender alguns modelos, como o User, para adicionar campos personalizados e atender a requisitos específicos do seu projeto.
+    
+    Aula 2 - Criando Super usuário
+
+        1 - Criamos o usuario
+            python manage.py createsuperuser
+            Depois seguir os passos no terminal
+
+        2 - runserver
+            python manage.py runserver
+
+        3 - admin
+            No navegador colocamos a url/admin para ter acesso ao usuario
+
+    Aula 3 - Funcionalidades Django admin
+
+        Dentro do ambiente é possivel criar usuario e grupos.
+        Além de varias outras informações, como a possibilidade de editar e excluir usuários, atribuir permissões e muito mais.
+
+    Aula 4 - Django User Model
+
+        Para utilizar os models vamos no arquivo admin.py e incluir uma função para registrar o model criado.
+        Assim vamos ter acesso a ele pelo Django admin
+
+            from django.contrib import admin
+            from .models import Post
+
+            admin.site.register(Post)
+
+        Criamos a função PostAdmin para organizar a pagina dentro do Django admin
+
+            class PostAdmin(admin.ModelAdmin):
+                list_display = ('title', 'slug','status', 'created_on') --- nomeação de colunas
+                list_filter = ('status',)       --- criado filtro pelo status
+                search_fields = ['title', 'content']    --- campos de pesquisa
+                prepopulated_fields = {'slug': ('title',)} --- preenchimento automático do slug
+
+            admin.site.register(Post, PostAdmin)
+
+M8 - Django templates
+
+    Aula 1 - Introdução aos Templates
+        Os templates do Django são arquivos HTML que definem a estrutura e o layout das páginas da sua aplicação. 
+        Eles permitem que você separe a lógica de apresentação da lógica de negócios, facilitando a manutenção e a reutilização do código.
+
+        
+        
+    Aula 2 - Configurando Django Templates
+    
+        Para criar um template, você pode criar um arquivo HTML dentro da pasta "templates" do seu aplicativo. Em seguida, você pode renderizar esse template em suas views usando a função render().
+
+        Exemplo de uso:
+
+        from django.shortcuts import render
+
+        def home(request):
+            return render(request, 'home.html')
+        OBS: criar a pasta templates na raiz do projeto e não dentro do app
+
+        Dentro de mysite ir em setting.py e adicionar a configuração dos templates
+
+        TEMPLATES_DIRS = [
+            BASE_DIR / 'templates',
+        ]
+
+        apos isso em TEMPLATES incluir o TEMPLATES_DIRS dentro de DIRS
+
+        Isso quer dizer ao django que vai ter um HTML que podemos trocar informações entre a view e o template.
+
+    Aula 3 - Usando HTML em Django templates
+
+        Incluimos os templates html dentro da pasta raiz templates 
+            base.html   
+            index.html
+            sidebar.html
+            post_detail.html
+    
+    Aula 4 - Configurando templates e views
+
+        1 - Criar a view para renderizar o template index.html em post_views.py
+                from django.views import generic
+
+                from blog.models import Post
+
+
+                class PostView(generic.ListView):
+                    queryset = Post.objects.filter(status=1).order_by('-created_on')
+                    template_name = 'index.html'
+
+                class PostDetailView(generic.DetailView):
+                    model = Post
+                    template_name = 'post_detail.html'
+
+        2 - Criar a rota para a view criada em urls.py
+                from django.urls import path 
+                from blog import views
+
+                urlpatterns = [
+                    path('', views.PostView.as_view(), name='home'),
+                    path('<slug:slug>/', views.PostDetailView.as_view(), name='post_detail'),
+                ]
+        
+        3 - incluito __init__.py em views
+                from .post_view import PostView
+                from .post_view import PostDetailView
+        
